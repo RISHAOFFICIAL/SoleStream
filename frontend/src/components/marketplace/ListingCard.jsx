@@ -31,12 +31,9 @@ const ListingCard = ({ listing }) => {
         
         <div className="flex justify-between items-center">
           <span className="text-primary font-extrabold text-xl tracking-tighter">${price}</span>
-          <Link 
-            to={`/listings/${id}`}
-            className="text-xs font-bold uppercase tracking-widest text-neutral bg-accent/30 px-3 py-1.5 rounded-lg hover:bg-accent/50 transition"
-          >
-            Unlock Pack
-          </Link>
+          <div className="text-[10px] font-bold uppercase tracking-widest text-gray-400">
+            SoleStream Original
+          </div>
         </div>
       </div>
     </div>

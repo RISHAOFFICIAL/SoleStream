@@ -40,7 +40,7 @@ const CreateListingModal = ({ isOpen, onClose, onSuccess }) => {
     data.append('full_resolution_archive', files.full_resolution_archive);
 
     try {
-      const response = await api.post('/seller/listings', data, {
+      const response = await api.post('/admin/listings', data, {
         headers: {
           'Content-Type': 'multipart/form-data'
         }

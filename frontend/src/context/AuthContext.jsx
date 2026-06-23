@@ -52,7 +52,7 @@ export const AuthProvider = ({ children }) => {
     user,
     loading,
     isAuthenticated: !!user,
-    isSeller: user?.role === 'seller',
+    isAdmin: user?.role === 'admin',
     login,
     register,
     logout,

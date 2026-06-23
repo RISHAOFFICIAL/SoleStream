@@ -9,7 +9,7 @@ const authMiddleware = (req, res, next) => {
   }
 
   try {
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    const decoded = jwt.verify(token, process.env.JWT_SECRET || 'fallback_secret');
     req.user = decoded;
     next();
   } catch (err) {
@@ -18,11 +18,19 @@ const authMiddleware = (req, res, next) => {
 };
 
 const sellerMiddleware = (req, res, next) => {
-  if (req.user && req.user.role === 'seller') {
+  if (req.user && (req.user.role === 'seller' || req.user.role === 'admin')) {
     next();
   } else {
-    return res.status(403).json({ success: false, error: 'Forbidden: Seller role required' });
+    return res.status(403).json({ success: false, error: 'Forbidden: Seller/Admin role required' });
   }
 };
 
-module.exports = { authMiddleware, sellerMiddleware };
+const adminMiddleware = (req, res, next) => {
+  if (req.user && req.user.role === 'admin') {
+    next();
+  } else {
+    return res.status(403).json({ success: false, error: 'Forbidden: Admin role required' });
+  }
+};
+
+module.exports = { authMiddleware, sellerMiddleware, adminMiddleware };

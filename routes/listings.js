@@ -9,9 +9,8 @@ router.get('/', (req, res) => {
 
   try {
     let query = `
-      SELECT l.*, sp.handle as seller_handle 
+      SELECT l.* 
       FROM listings l
-      JOIN seller_profiles sp ON l.seller_id = sp.user_id
       WHERE l.status = 'active'
     `;
     const params = [];
@@ -71,9 +70,8 @@ router.get('/:id', (req, res) => {
 
   try {
     const listing = db.prepare(`
-      SELECT l.*, sp.handle as seller_handle 
+      SELECT l.* 
       FROM listings l
-      JOIN seller_profiles sp ON l.seller_id = sp.user_id
       WHERE l.id = ? AND l.status = 'active'
     `).get(id);
 

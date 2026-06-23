@@ -45,8 +45,9 @@ async function handleCheckoutSessionCompleted(session) {
     if (!listing) return;
 
     const order_id = crypto.randomUUID();
-    const commission = Math.round(amount_total * 0.20);
-    const payout = amount_total - commission;
+    // In single-seller mode, commission is 0 as platform = owner
+    const commission = 0;
+    const payout = amount_total;
 
     const transaction = db.transaction(() => {
       // Create Order

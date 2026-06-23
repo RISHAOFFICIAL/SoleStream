@@ -13,7 +13,7 @@ router.post('/create-session', async (req, res) => {
 
   try {
     const listing = db.prepare(`
-      SELECT l.*, sp.stripe_connect_account_id, sp.handle
+      SELECT l.*, sp.handle
       FROM listings l
       JOIN seller_profiles sp ON l.seller_id = sp.user_id
       WHERE l.id = ? AND l.status = 'active'
@@ -21,10 +21,6 @@ router.post('/create-session', async (req, res) => {
 
     if (!listing) {
       return res.status(404).json({ success: false, error: 'Listing not found' });
-    }
-
-    if (!listing.stripe_connect_account_id && process.env.STRIPE_SECRET_KEY) {
-      return res.status(400).json({ success: false, error: 'Seller has not connected Stripe' });
     }
 
     // If no stripe key, return a mock URL
@@ -43,19 +39,13 @@ router.post('/create-session', async (req, res) => {
           currency: 'usd',
           product_data: {
             name: listing.title,
-            description: `Discreet download pack from @${listing.handle}`,
+            description: `Digital content pack from ${listing.handle}`,
           },
           unit_amount: listing.price_cents,
         },
         quantity: 1,
       }],
       mode: 'payment',
-      payment_intent_data: {
-        application_fee_amount: Math.round(listing.price_cents * 0.20), // 20% platform commission
-        transfer_data: {
-          destination: listing.stripe_connect_account_id,
-        },
-      },
       success_url: `${process.env.DOMAIN}/checkout/success?session_id={CHECKOUT_SESSION_ID}`,
       cancel_url: `${process.env.DOMAIN}/listings/${listing_id}`,
       customer_email: buyer_email,

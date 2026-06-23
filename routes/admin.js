@@ -1,12 +1,12 @@
 const express = require('express');
 const router = express.Router();
+const db = require('../db');
 const multer = require('multer');
 const path = require('path');
 const fs = require('fs');
 const crypto = require('crypto');
 const sharp = require('sharp');
-const db = require('../db');
-const { authMiddleware, sellerMiddleware } = require('../middleware/auth');
+const { authMiddleware, adminMiddleware } = require('../middleware/auth');
 
 // Multer setup
 const storage = multer.diskStorage({
@@ -24,17 +24,45 @@ const upload = multer({
   limits: { fileSize: 50 * 1024 * 1024 } // 50MB limit
 });
 
-// Protect all seller routes
+// Protect all admin routes
 router.use(authMiddleware);
-router.use(sellerMiddleware);
+router.use(adminMiddleware);
 
-// POST /api/seller/listings
+// GET /api/admin/profile
+router.get('/profile', (req, res) => {
+  try {
+    const profile = db.prepare('SELECT * FROM seller_profiles WHERE user_id = ?').get(req.user.id);
+    res.json({ success: true, profile: profile || { handle: 'SoleStream', bio: '' } });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ success: false, error: 'Internal server error' });
+  }
+});
+
+// PUT /api/admin/profile
+router.put('/profile', (req, res) => {
+  const { handle, bio } = req.body;
+  const now = Math.floor(Date.now() / 1000);
+  try {
+    db.prepare(`
+      UPDATE seller_profiles 
+      SET handle = ?, bio = ?, updated_at = ?
+      WHERE user_id = ?
+    `).run(handle, bio || '', now, req.user.id);
+    res.json({ success: true });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ success: false, error: 'Internal server error' });
+  }
+});
+
+// POST /api/admin/listings
 router.post('/listings', upload.fields([
   { name: 'preview_image', maxCount: 1 },
   { name: 'full_resolution_archive', maxCount: 1 }
 ]), async (req, res) => {
   const { title, description, price_cents } = req.body;
-  const seller_id = req.user.id;
+  const admin_id = req.user.id;
 
   if (!title || !price_cents || !req.files['preview_image'] || !req.files['full_resolution_archive']) {
     return res.status(400).json({ success: false, error: 'Missing required fields or files' });
@@ -47,7 +75,6 @@ router.post('/listings', upload.fields([
     const previewFile = req.files['preview_image'][0];
     const fullFile = req.files['full_resolution_archive'][0];
 
-    // Process preview with sharp
     const previewOutputPath = path.join(__dirname, '../public/previews', `preview-${listing_id}.jpg`);
     await sharp(previewFile.path)
       .resize(800, 800, { fit: 'inside' })
@@ -58,15 +85,13 @@ router.post('/listings', upload.fields([
       db.prepare(`
         INSERT INTO listings (id, seller_id, title, description, price_cents, status, created_at, updated_at)
         VALUES (?, ?, ?, ?, ?, ?, ?, ?)
-      `).run(listing_id, seller_id, title, description || '', parseInt(price_cents), 'active', now, now);
+      `).run(listing_id, admin_id, title, description || '', parseInt(price_cents), 'active', now, now);
 
-      // Insert preview asset
       db.prepare(`
         INSERT INTO listing_assets (id, listing_id, asset_type, file_path, file_size, mime_type, created_at)
         VALUES (?, ?, ?, ?, ?, ?, ?)
       `).run(crypto.randomUUID(), listing_id, 'preview', previewOutputPath, fs.statSync(previewOutputPath).size, 'image/jpeg', now);
 
-      // Insert full resolution asset
       db.prepare(`
         INSERT INTO listing_assets (id, listing_id, asset_type, file_path, file_size, mime_type, created_at)
         VALUES (?, ?, ?, ?, ?, ?, ?)
@@ -74,22 +99,17 @@ router.post('/listings', upload.fields([
     });
 
     insertTransaction();
-
-    res.status(201).json({
-      success: true,
-      message: 'Listing successfully created',
-      listing_id
-    });
+    res.status(201).json({ success: true, listing_id });
   } catch (err) {
     console.error(err);
     res.status(500).json({ success: false, error: 'Internal server error' });
   }
 });
 
-// GET /api/seller/listings (Helper for dashboard)
+// GET /api/admin/listings
 router.get('/listings', (req, res) => {
   try {
-    const listings = db.prepare('SELECT * FROM listings WHERE seller_id = ? AND status != "archived" ORDER BY created_at DESC').all(req.user.id);
+    const listings = db.prepare('SELECT * FROM listings WHERE status != "archived" ORDER BY created_at DESC').all();
     res.json({ success: true, listings });
   } catch (err) {
     console.error(err);
@@ -97,125 +117,57 @@ router.get('/listings', (req, res) => {
   }
 });
 
-// PUT /api/seller/listings/:id
+// PUT /api/admin/listings/:id
 router.put('/listings/:id', (req, res) => {
   const { id } = req.params;
   const { title, description, price_cents, status } = req.body;
   const now = Math.floor(Date.now() / 1000);
-
   try {
-    const listing = db.prepare('SELECT * FROM listings WHERE id = ? AND seller_id = ?').get(id, req.user.id);
-    if (!listing) {
-      return res.status(404).json({ success: false, error: 'Listing not found or unauthorized' });
-    }
-
     db.prepare(`
       UPDATE listings 
       SET title = ?, description = ?, price_cents = ?, status = ?, updated_at = ?
       WHERE id = ?
-    `).run(title || listing.title, description || listing.description, price_cents || listing.price_cents, status || listing.status, now, id);
-
-    res.json({ success: true, listing_id: id });
+    `).run(title, description, price_cents, status, now, id);
+    res.json({ success: true });
   } catch (err) {
     console.error(err);
     res.status(500).json({ success: false, error: 'Internal server error' });
   }
 });
 
-// DELETE /api/seller/listings/:id (Archive)
+// DELETE /api/admin/listings/:id
 router.delete('/listings/:id', (req, res) => {
   const { id } = req.params;
   const now = Math.floor(Date.now() / 1000);
-
   try {
-    const listing = db.prepare('SELECT * FROM listings WHERE id = ? AND seller_id = ?').get(id, req.user.id);
-    if (!listing) {
-      return res.status(404).json({ success: false, error: 'Listing not found or unauthorized' });
-    }
-
     db.prepare("UPDATE listings SET status = 'archived', updated_at = ? WHERE id = ?").run(now, id);
-    res.json({ success: true, message: 'Listing archived' });
+    res.json({ success: true });
   } catch (err) {
     console.error(err);
     res.status(500).json({ success: false, error: 'Internal server error' });
   }
 });
 
-// GET /api/seller/analytics
+// GET /api/admin/analytics
 router.get('/analytics', (req, res) => {
   try {
     const stats = db.prepare(`
       SELECT 
         SUM(amount_total_cents) as gross_sales,
-        SUM(seller_payout_cents) as net_earnings,
         COUNT(*) as total_transactions
       FROM orders
-      WHERE seller_id = ? AND status = 'completed'
-    `).get(req.user.id);
-
-    const profile = db.prepare('SELECT is_premium, subscription_status FROM seller_profiles WHERE user_id = ?').get(req.user.id);
+      WHERE status = 'completed'
+    `).get();
 
     res.json({
       success: true,
       analytics: {
         gross_sales_cents: stats.gross_sales || 0,
-        net_earnings_cents: stats.net_earnings || 0,
         total_transactions: stats.total_transactions || 0,
-        average_order_value_cents: stats.total_transactions > 0 ? Math.round(stats.gross_sales / stats.total_transactions) : 0,
-        subscription: {
-          tier: profile.is_premium ? 'premium' : 'free',
-          status: profile.subscription_status || 'none'
-        }
+        average_order_value_cents: stats.total_transactions > 0 ? Math.round(stats.gross_sales / stats.total_transactions) : 0
       }
     });
   } catch (err) {
-    console.error(err);
-    res.status(500).json({ success: false, error: 'Internal server error' });
-  }
-});
-
-// GET /api/seller/profile
-router.get('/profile', (req, res) => {
-  try {
-    const profile = db.prepare('SELECT * FROM seller_profiles WHERE user_id = ?').get(req.user.id);
-    if (!profile) {
-      return res.status(404).json({ success: false, error: 'Profile not found' });
-    }
-    res.json({ success: true, profile });
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ success: false, error: 'Internal server error' });
-  }
-});
-
-// PUT /api/seller/profile
-router.put('/profile', (req, res) => {
-  const { bio, handle, avatar_url } = req.body;
-  const now = Math.floor(Date.now() / 1000);
-
-  try {
-    const profile = db.prepare('SELECT * FROM seller_profiles WHERE user_id = ?').get(req.user.id);
-    if (!profile) {
-      return res.status(404).json({ success: false, error: 'Profile not found' });
-    }
-
-    db.prepare(`
-      UPDATE seller_profiles 
-      SET bio = ?, handle = ?, avatar_url = ?, updated_at = ?
-      WHERE user_id = ?
-    `).run(
-      bio !== undefined ? bio : profile.bio, 
-      handle !== undefined ? handle : profile.handle, 
-      avatar_url !== undefined ? avatar_url : profile.avatar_url, 
-      now, 
-      req.user.id
-    );
-
-    res.json({ success: true, message: 'Profile updated successfully' });
-  } catch (err) {
-    if (err.message.includes('UNIQUE constraint failed: seller_profiles.handle')) {
-      return res.status(400).json({ success: false, error: 'Handle already taken' });
-    }
     console.error(err);
     res.status(500).json({ success: false, error: 'Internal server error' });
   }

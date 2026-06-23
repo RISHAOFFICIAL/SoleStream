@@ -71,9 +71,9 @@ const ListingDetail = () => {
   if (error || !listing) {
     return (
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24 text-center">
-        <h2 className="text-2xl font-bold text-neutral mb-4">Listing not found</h2>
-        <p className="text-gray-500 mb-8">{error || "The pack you're looking for doesn't exist."}</p>
-        <Link to="/browse" className="bg-primary text-neutral px-8 py-3 rounded-xl font-bold">
+        <h2 className="text-2xl font-bold text-neutral mb-4 tracking-tight">Listing not found</h2>
+        <p className="text-gray-500 mb-8 font-medium">{error || "The pack you're looking for doesn't exist."}</p>
+        <Link to="/browse" className="bg-primary text-neutral px-8 py-3 rounded-xl font-bold transition shadow-lg shadow-primary/20">
           Back to Marketplace
         </Link>
       </div>
@@ -93,8 +93,8 @@ const ListingDetail = () => {
               alt={listing.title}
               className="w-full h-full object-cover"
             />
-            <div className="absolute top-4 left-4 bg-neutral/80 text-white px-3 py-1 rounded-full text-xs font-bold backdrop-blur-sm">
-              WATERMARKED PREVIEW
+            <div className="absolute top-4 left-4 bg-neutral/80 text-white px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-widest backdrop-blur-sm">
+              Watermarked Preview
             </div>
           </div>
           
@@ -120,68 +120,64 @@ const ListingDetail = () => {
         {/* Content Section */}
         <div className="mt-12 lg:mt-0">
           <div className="flex items-center space-x-2 mb-4">
-            <Link to="/browse" className="text-sm text-gray-500 hover:text-primary transition">Marketplace</Link>
+            <Link to="/browse" className="text-sm font-bold text-gray-400 uppercase tracking-widest hover:text-primary transition">Store</Link>
             <span className="text-gray-300 text-xs">/</span>
-            <span className="text-sm text-neutral font-medium">{listing.title}</span>
+            <span className="text-sm font-bold text-neutral uppercase tracking-widest">{listing.title}</span>
           </div>
 
-          <h1 className="text-4xl font-extrabold text-neutral mb-2">{listing.title}</h1>
+          <h1 className="text-4xl font-extrabold text-neutral mb-2 tracking-tight">{listing.title}</h1>
           
           <div className="flex items-center space-x-4 mb-8">
-            <Link to={`/seller/${listing.seller_handle}`} className="flex items-center group">
-              <div className="w-8 h-8 bg-secondary/30 rounded-full mr-2 group-hover:ring-2 group-hover:ring-primary transition"></div>
-              <span className="text-neutral font-bold group-hover:text-primary transition">@{listing.seller_handle}</span>
-            </Link>
-            <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-primary/20 text-neutral">
-              Verified Creator
+            <span className="inline-flex items-center px-3 py-1 rounded-full text-[10px] font-extrabold uppercase tracking-widest bg-primary/20 text-neutral">
+              SoleStream Original
+            </span>
+            <span className="inline-flex items-center px-3 py-1 rounded-full text-[10px] font-extrabold uppercase tracking-widest bg-accent/30 text-neutral">
+              Instant Delivery
             </span>
           </div>
 
-          <p className="text-gray-600 text-lg leading-relaxed mb-8 whitespace-pre-wrap">
+          <p className="text-gray-600 text-lg leading-relaxed mb-8 whitespace-pre-wrap font-medium">
             {listing.description}
           </p>
 
           <div className="bg-white rounded-3xl p-8 border border-secondary/20 shadow-sm mb-12">
             <div className="flex justify-between items-center mb-8">
-              <span className="text-gray-500 font-medium">Pack Price</span>
-              <span className="text-3xl font-extrabold text-neutral">${price}</span>
+              <span className="text-gray-400 font-bold uppercase tracking-widest text-sm">Collection Price</span>
+              <span className="text-3xl font-extrabold text-neutral tracking-tight">${price}</span>
             </div>
 
             <div className="space-y-4">
               <div>
-                <label className="block text-sm font-bold text-neutral mb-2 uppercase tracking-wide">
+                <label className="block text-xs font-bold text-gray-400 mb-2 uppercase tracking-widest ml-1">
                   Delivery Email
                 </label>
                 <input 
                   type="email" 
-                  placeholder="Enter your email for delivery"
-                  className="w-full bg-background border border-secondary/30 rounded-xl px-4 py-3 focus:ring-2 focus:ring-primary/50 focus:border-primary outline-none transition"
+                  placeholder="email@example.com"
+                  className="w-full bg-background border border-secondary/30 rounded-xl px-4 py-3 focus:ring-2 focus:ring-primary/50 focus:border-primary outline-none transition font-medium"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   disabled={checkoutLoading}
                 />
-                <p className="text-[10px] text-gray-400 mt-2">
-                  Content will be delivered instantly to this address after secure checkout.
+                <p className="text-[10px] text-gray-400 mt-2 ml-1 font-medium">
+                  The download link will be sent to this address immediately after checkout.
                 </p>
               </div>
               
               <button 
                 onClick={handlePurchase}
                 disabled={checkoutLoading}
-                className="w-full bg-primary text-neutral py-4 rounded-xl font-bold text-lg hover:bg-opacity-90 transition shadow-lg shadow-primary/20 disabled:opacity-50 disabled:cursor-not-allowed"
+                className="w-full bg-primary text-neutral py-4 rounded-xl font-extrabold text-lg hover:bg-opacity-90 transition shadow-lg shadow-primary/20 disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                {checkoutLoading ? 'Preparing Checkout...' : 'Purchase Pack'}
+                {checkoutLoading ? 'Preparing Secure Checkout...' : 'Purchase & Download'}
               </button>
               
-              <div className="flex justify-center items-center space-x-4 pt-2">
-                <div className="text-[10px] text-gray-400 flex items-center">
-                  <span className="mr-1">🔒</span> Encrypted
+              <div className="flex justify-center items-center space-x-6 pt-2">
+                <div className="text-[10px] font-bold text-gray-400 uppercase tracking-widest flex items-center">
+                  <span className="mr-1.5">🔒</span> SSL Encrypted
                 </div>
-                <div className="text-[10px] text-gray-400 flex items-center">
-                  <span className="mr-1">💳</span> Stripe Secure
-                </div>
-                <div className="text-[10px] text-gray-400 flex items-center">
-                  <span className="mr-1">📧</span> Instant Link
+                <div className="text-[10px] font-bold text-gray-400 uppercase tracking-widest flex items-center">
+                  <span className="mr-1.5">💳</span> Stripe Secure
                 </div>
               </div>
             </div>
@@ -190,11 +186,11 @@ const ListingDetail = () => {
           <div className="grid grid-cols-2 gap-y-6 gap-x-12 border-t border-secondary/10 pt-8">
             <div>
               <dt className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-1">Format</dt>
-              <dd className="text-neutral font-medium">Digital Download (ZIP)</dd>
+              <dd className="text-neutral font-extrabold">Digital Archive (ZIP)</dd>
             </div>
             <div>
               <dt className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-1">License</dt>
-              <dd className="text-neutral font-medium">Personal Use</dd>
+              <dd className="text-neutral font-extrabold">Personal Use Only</dd>
             </div>
           </div>
         </div>

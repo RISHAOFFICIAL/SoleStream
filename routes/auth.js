@@ -16,16 +16,23 @@ const COOKIE_OPTIONS = {
   maxAge: 24 * 60 * 60 * 1000 // 1 day
 };
 
-// POST /api/auth/register
+// POST /api/auth/register (Buyers only publicly)
 router.post('/register', async (req, res) => {
-  const { email, password, role, handle } = req.body;
+  const { email, password, role = 'buyer', secret } = req.body;
 
-  if (!email || !password || !role) {
+  if (!email || !password) {
     return res.status(400).json({ success: false, error: 'Missing required fields' });
   }
 
-  if (role === 'seller' && !handle) {
-    return res.status(400).json({ success: false, error: 'Handle is required for sellers' });
+  // Restrict admin registration with a secret
+  let finalRole = 'buyer';
+  if (role === 'admin') {
+    if (secret !== process.env.ADMIN_REGISTRATION_SECRET) {
+      return res.status(403).json({ success: false, error: 'Forbidden: Invalid admin secret' });
+    }
+    finalRole = 'admin';
+  } else if (role === 'seller') {
+     return res.status(400).json({ success: false, error: 'Seller role is no longer supported. Use admin or buyer.' });
   }
 
   try {
@@ -35,31 +42,25 @@ router.post('/register', async (req, res) => {
       return res.status(400).json({ success: false, error: 'User already exists' });
     }
 
-    if (role === 'seller') {
-      const existingHandle = db.prepare('SELECT * FROM seller_profiles WHERE handle = ?').get(handle);
-      if (existingHandle) {
-        return res.status(400).json({ success: false, error: 'Handle already taken' });
-      }
-    }
-
     const userId = crypto.randomUUID();
     const passwordHash = await bcrypt.hash(password, 10);
     const now = Math.floor(Date.now() / 1000);
 
     const insertUser = db.transaction(() => {
       db.prepare('INSERT INTO users (id, email, password_hash, role, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?)')
-        .run(userId, email.toLowerCase(), passwordHash, role, now, now);
+        .run(userId, email.toLowerCase(), passwordHash, finalRole, now, now);
 
-      if (role === 'seller') {
+      if (finalRole === 'admin') {
+        // Create a default store profile for the admin
         db.prepare('INSERT INTO seller_profiles (user_id, handle, created_at, updated_at) VALUES (?, ?, ?, ?)')
-          .run(userId, handle, now, now);
+          .run(userId, 'SoleStream', now, now);
       }
     });
 
     insertUser();
 
     // Create token
-    const token = jwt.sign({ id: userId, email, role }, JWT_SECRET, { expiresIn: '1d' });
+    const token = jwt.sign({ id: userId, email, role: finalRole }, JWT_SECRET, { expiresIn: '1d' });
 
     res.cookie('token', token, COOKIE_OPTIONS);
 
@@ -68,7 +69,7 @@ router.post('/register', async (req, res) => {
       user: {
         id: userId,
         email: email.toLowerCase(),
-        role,
+        role: finalRole,
         created_at: now
       }
     });
@@ -129,21 +130,9 @@ router.get('/me', authMiddleware, (req, res) => {
       return res.status(404).json({ success: false, error: 'User not found' });
     }
 
-    let seller_profile = null;
-    if (user.role === 'seller') {
-      seller_profile = db.prepare('SELECT handle, is_premium, stripe_connect_account_id FROM seller_profiles WHERE user_id = ?').get(user.id);
-    }
-
     res.json({
       success: true,
-      user: {
-        ...user,
-        seller_profile: seller_profile ? {
-          handle: seller_profile.handle,
-          is_premium: !!seller_profile.is_premium,
-          stripe_connected: !!seller_profile.stripe_connect_account_id
-        } : null
-      }
+      user
     });
   } catch (err) {
     console.error(err);

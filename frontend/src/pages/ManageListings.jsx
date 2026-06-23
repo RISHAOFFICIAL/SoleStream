@@ -11,7 +11,7 @@ const ManageListings = () => {
   const fetchListings = async () => {
     try {
       setLoading(true);
-      const response = await api.get('/seller/listings');
+      const response = await api.get('/admin/listings');
       if (response.data.success) {
         setListings(response.data.listings);
       }
@@ -30,7 +30,7 @@ const ManageListings = () => {
     if (!window.confirm('Are you sure you want to archive this listing? It will no longer be visible to buyers.')) return;
     
     try {
-      const response = await api.delete(`/seller/listings/${id}`);
+      const response = await api.delete(`/admin/listings/${id}`);
       if (response.data.success) {
         fetchListings();
       }
@@ -69,7 +69,7 @@ const ManageListings = () => {
           <div className="p-20 text-center">
             <Icon name="package" className="w-16 h-16 text-gray-200 mx-auto mb-4" />
             <h3 className="text-lg font-bold text-neutral">No content packs yet</h3>
-            <p className="text-gray-400 mt-2 max-w-xs mx-auto">Upload your first pack to start earning passive income.</p>
+            <p className="text-gray-400 mt-2 max-w-xs mx-auto">Upload your first pack to start your storefront.</p>
             <button 
               onClick={() => setIsModalOpen(true)}
               className="mt-6 text-primary font-bold hover:underline"

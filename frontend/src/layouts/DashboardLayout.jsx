@@ -22,16 +22,16 @@ const DashboardLayout = () => {
         </div>
         <nav className="px-4 space-y-1">
           <NavLink to="/dashboard" end className={({ isActive }) => `block px-4 py-3 rounded-xl font-bold transition ${isActive ? 'bg-primary text-neutral shadow-sm' : 'text-gray-500 hover:bg-secondary/10 hover:text-neutral'}`}>
-            Overview
+            Admin Overview
           </NavLink>
           <NavLink to="/dashboard/listings" className={({ isActive }) => `block px-4 py-3 rounded-xl font-bold transition ${isActive ? 'bg-primary text-neutral shadow-sm' : 'text-gray-500 hover:bg-secondary/10 hover:text-neutral'}`}>
-            My Listings
+            Manage Store
           </NavLink>
           <NavLink to="/dashboard/orders" className={({ isActive }) => `block px-4 py-3 rounded-xl font-bold transition ${isActive ? 'bg-primary text-neutral shadow-sm' : 'text-gray-500 hover:bg-secondary/10 hover:text-neutral'}`}>
-            Orders
+            Sales History
           </NavLink>
           <NavLink to="/dashboard/settings" className={({ isActive }) => `block px-4 py-3 rounded-xl font-bold transition ${isActive ? 'bg-primary text-neutral shadow-sm' : 'text-gray-500 hover:bg-secondary/10 hover:text-neutral'}`}>
-            Settings
+            Site Settings
           </NavLink>
         </nav>
         <div className="absolute bottom-8 left-4 right-4">
@@ -52,11 +52,11 @@ const DashboardLayout = () => {
           </div>
           <div className="flex items-center space-x-4 ml-auto">
             <div className="text-right hidden sm:block">
-              <div className="text-sm font-bold text-neutral">@{user.seller_profile?.handle || 'Seller'}</div>
-              <div className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Creator Account</div>
+              <div className="text-sm font-bold text-neutral">Store Owner</div>
+              <div className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Administrator</div>
             </div>
             <div className="w-10 h-10 rounded-full bg-primary/20 flex items-center justify-center font-bold text-neutral border-2 border-white shadow-sm">
-              {user.email[0].toUpperCase()}
+              A
             </div>
           </div>
         </header>

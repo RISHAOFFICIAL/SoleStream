@@ -9,7 +9,6 @@ import { AuthProvider } from './context/AuthContext';
 import Home from './pages/Home';
 import Browse from './pages/Browse';
 import ListingDetail from './pages/ListingDetail';
-import SellerProfile from './pages/SellerProfile';
 import CheckoutSuccess from './pages/CheckoutSuccess';
 import Login from './pages/Login';
 import Register from './pages/Register';
@@ -27,17 +26,16 @@ function App() {
             <Route path="/" element={<Home />} />
             <Route path="/browse" element={<Browse />} />
             <Route path="/listings/:id" element={<ListingDetail />} />
-            <Route path="/seller/:handle" element={<SellerProfile />} />
             <Route path="/checkout/success" element={<CheckoutSuccess />} />
             <Route path="/auth/login" element={<Login />} />
             <Route path="/auth/register" element={<Register />} />
           </Route>
 
-          {/* Dashboard Routes */}
+          {/* Admin Dashboard Routes */}
           <Route 
             path="/dashboard" 
             element={
-              <ProtectedRoute role="seller">
+              <ProtectedRoute role="admin">
                 <DashboardLayout />
               </ProtectedRoute>
             }

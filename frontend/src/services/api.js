@@ -29,18 +29,14 @@ export const listingsAPI = {
   getListing: (id) => apiClient.get(`/listings/${id}`),
 };
 
-export const sellersAPI = {
-  getSeller: (handle) => apiClient.get(`/sellers/${handle}`),
-};
-
-export const sellerDashboardAPI = {
-  createListing: (formData) => apiClient.post('/seller/listings', formData, {
+export const adminAPI = {
+  createListing: (formData) => apiClient.post('/admin/listings', formData, {
     headers: { 'Content-Type': 'multipart/form-data' },
   }),
-  updateListing: (id, data) => apiClient.put(`/seller/listings/${id}`, data),
-  deleteListing: (id) => apiClient.delete(`/seller/listings/${id}`),
-  getAnalytics: () => apiClient.get('/seller/analytics'),
-  onboardStripe: () => apiClient.post('/seller/stripe/onboard'),
+  updateListing: (id, data) => apiClient.put(`/admin/listings/${id}`, data),
+  deleteListing: (id) => apiClient.delete(`/admin/listings/${id}`),
+  getListings: () => apiClient.get('/admin/listings'),
+  getAnalytics: () => apiClient.get('/admin/analytics'),
 };
 
 export const checkoutAPI = {

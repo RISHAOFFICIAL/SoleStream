@@ -20,8 +20,7 @@ app.use(express.json());
 // Other Routes
 app.use('/api/auth', require('./routes/auth'));
 app.use('/api/listings', require('./routes/listings'));
-app.use('/api/sellers', require('./routes/sellers'));
-app.use('/api/seller', require('./routes/seller'));
+app.use('/api/admin', require('./routes/admin'));
 app.use('/api/checkout', require('./routes/checkout'));
 app.use('/api/delivery', require('./routes/delivery'));
 

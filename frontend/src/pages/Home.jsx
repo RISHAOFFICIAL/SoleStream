@@ -33,37 +33,36 @@ const Home = () => {
           <div className="lg:grid lg:grid-cols-2 lg:gap-8 items-center">
             <div className="mb-12 lg:mb-0">
               <h1 className="text-5xl md:text-6xl font-extrabold text-neutral tracking-tight mb-6">
-                Automate Your <br />
-                <span className="text-primary">Content Sales</span>
+                Premium Digital <br />
+                <span className="text-primary">Content Packs</span>
               </h1>
-              <p className="text-xl text-gray-600 mb-10 max-w-lg">
-                The discreet, professional marketplace for creators. 
-                Earn passive income while we handle the listing, payments, 
-                and delivery.
+              <p className="text-xl text-gray-600 mb-10 max-w-lg font-medium">
+                High-quality, exclusive digital content delivered instantly. 
+                Discreet checkout and secure access to all premium collections.
               </p>
               <div className="flex flex-col sm:flex-row space-y-4 sm:space-y-0 sm:space-x-4">
                 <Link 
-                  to="/auth/register" 
+                  to="/browse" 
                   className="bg-primary text-neutral px-8 py-4 rounded-xl font-bold text-lg text-center hover:bg-opacity-90 transition shadow-lg shadow-primary/20"
                 >
-                  Start Selling
+                  Shop the Collection
                 </Link>
                 <Link 
-                  to="/browse" 
+                  to="/auth/register" 
                   className="bg-white text-neutral border-2 border-secondary px-8 py-4 rounded-xl font-bold text-lg text-center hover:bg-background transition"
                 >
-                  Browse Marketplace
+                  Create Account
                 </Link>
               </div>
-              <div className="mt-10 flex items-center space-x-6 text-sm text-gray-500">
+              <div className="mt-10 flex items-center space-x-6 text-sm text-gray-500 font-bold uppercase tracking-widest">
                 <div className="flex items-center">
-                  <span className="text-primary mr-2">✓</span> Instant Payouts
+                  <span className="text-primary mr-2">✓</span> Instant Access
                 </div>
                 <div className="flex items-center">
                   <span className="text-primary mr-2">✓</span> 100% Discreet
                 </div>
                 <div className="flex items-center">
-                  <span className="text-primary mr-2">✓</span> AI Support
+                  <span className="text-primary mr-2">✓</span> Secure
                 </div>
               </div>
             </div>
@@ -72,7 +71,7 @@ const Home = () => {
               <div className="absolute -bottom-20 -left-20 w-72 h-72 bg-primary/10 rounded-full blur-3xl -z-10"></div>
               <img 
                 src={sellerPersona} 
-                alt="SoleStream Creator" 
+                alt="SoleStream Content" 
                 className="w-full max-w-md mx-auto drop-shadow-2xl rounded-3xl"
               />
             </div>
@@ -84,24 +83,24 @@ const Home = () => {
       <section className="bg-background py-24">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
-            <h2 className="text-3xl md:text-4xl font-bold text-neutral mb-4">Designed for Discretion & Ease</h2>
-            <p className="text-gray-600 max-w-2xl mx-auto">We built SoleStream to remove the friction of manual DMs and payment chasing.</p>
+            <h2 className="text-3xl md:text-4xl font-extrabold text-neutral mb-4 tracking-tight">Designed for Privacy & Speed</h2>
+            <p className="text-gray-500 max-w-2xl mx-auto font-medium">We ensure every transaction is fast, secure, and completely anonymous.</p>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             <div className="bg-white p-8 rounded-2xl shadow-sm border border-secondary/10">
-              <div className="w-12 h-12 bg-primary/20 rounded-lg flex items-center justify-center mb-6 text-2xl">💰</div>
-              <h3 className="text-xl font-bold mb-4">Passive Income</h3>
-              <p className="text-gray-600">List once, sell forever. Our automated checkout handles 100% of the transaction and delivery.</p>
+              <div className="w-12 h-12 bg-primary/20 rounded-lg flex items-center justify-center mb-6 text-2xl">⚡</div>
+              <h3 className="text-xl font-bold mb-4">Instant Delivery</h3>
+              <p className="text-gray-500 font-medium">Get your download link immediately after a successful Stripe payment. No waiting.</p>
             </div>
             <div className="bg-white p-8 rounded-2xl shadow-sm border border-secondary/10">
-              <div className="w-12 h-12 bg-primary/20 rounded-lg flex items-center justify-center mb-6 text-2xl">🛡️</div>
-              <h3 className="text-xl font-bold mb-4">Privacy First</h3>
-              <p className="text-gray-600">Secure, anonymous accounts for both buyers and sellers. We never reveal your real identity.</p>
+              <div className="w-12 h-12 bg-primary/20 rounded-lg flex items-center justify-center mb-6 text-2xl">🔒</div>
+              <h3 className="text-xl font-bold mb-4">Secure Checkout</h3>
+              <p className="text-gray-500 font-medium">Industry-standard encryption via Stripe. Your financial details never touch our servers.</p>
             </div>
             <div className="bg-white p-8 rounded-2xl shadow-sm border border-secondary/10">
-              <div className="w-12 h-12 bg-primary/20 rounded-lg flex items-center justify-center mb-6 text-2xl">🤖</div>
-              <h3 className="text-xl font-bold mb-4">AI Content Ready</h3>
-              <p className="text-gray-600">Explicitly supports AI-generated content. Perfect for creators using Ideogram or Kling AI.</p>
+              <div className="w-12 h-12 bg-primary/20 rounded-lg flex items-center justify-center mb-6 text-2xl">🖼️</div>
+              <h3 className="text-xl font-bold mb-4">High Resolution</h3>
+              <p className="text-gray-500 font-medium">All packs contain full-resolution, unwatermarked original files for the best experience.</p>
             </div>
           </div>
         </div>
@@ -112,11 +111,11 @@ const Home = () => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-end mb-12">
             <div>
-              <h2 className="text-3xl font-bold text-neutral mb-2">Featured Packs</h2>
-              <p className="text-gray-500 text-lg">Hand-picked collections from our top creators.</p>
+              <h2 className="text-3xl font-extrabold text-neutral mb-2 tracking-tight">Featured Packs</h2>
+              <p className="text-gray-500 text-lg font-medium">Hand-picked premium collections available now.</p>
             </div>
             <Link to="/browse" className="text-secondary font-bold hover:text-primary transition hidden sm:block">
-              View All Marketplace →
+              View All Content →
             </Link>
           </div>
           
@@ -134,13 +133,13 @@ const Home = () => {
             </div>
           ) : (
             <div className="bg-background p-12 rounded-2xl text-center">
-              <p className="text-gray-500">New packs arriving soon!</p>
+              <p className="text-gray-500 font-bold uppercase tracking-widest">New packs arriving soon!</p>
             </div>
           )}
 
           <div className="mt-12 text-center sm:hidden">
             <Link to="/browse" className="inline-block bg-white text-neutral border-2 border-secondary px-8 py-3 rounded-xl font-bold transition">
-              View All Marketplace
+              View All Content
             </Link>
           </div>
         </div>
@@ -149,15 +148,15 @@ const Home = () => {
       {/* Call to Action */}
       <section className="py-20 bg-white">
         <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="bg-neutral rounded-3xl p-12 text-center relative overflow-hidden">
+          <div className="bg-neutral rounded-3xl p-12 text-center relative overflow-hidden shadow-2xl">
             <div className="absolute top-0 left-0 w-full h-full bg-primary/5 -z-0"></div>
-            <h2 className="text-3xl md:text-4xl font-bold text-white mb-6 relative z-10">Ready to join the stream?</h2>
-            <p className="text-gray-400 mb-10 text-lg relative z-10">Create your seller profile in under 2 minutes and start earning today.</p>
+            <h2 className="text-3xl md:text-4xl font-extrabold text-white mb-6 relative z-10 tracking-tight">Access the Full Archive</h2>
+            <p className="text-gray-400 mb-10 text-lg relative z-10 font-medium">Join SoleStream today to manage your purchases and get notified of new pack releases.</p>
             <Link 
               to="/auth/register" 
-              className="inline-block bg-primary text-neutral px-10 py-4 rounded-xl font-bold text-lg hover:bg-opacity-90 transition relative z-10"
+              className="inline-block bg-primary text-neutral px-10 py-4 rounded-xl font-bold text-lg hover:bg-opacity-90 transition relative z-10 shadow-lg shadow-primary/20"
             >
-              Get Started Now
+              Join SoleStream
             </Link>
           </div>
         </div>

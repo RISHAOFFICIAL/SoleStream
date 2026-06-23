@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import Logo from '../components/common/Logo';
+import { useAuth } from '../context/AuthContext';
 
 const Register = () => {
   const [role, setRole] = useState('buyer'); // 'buyer' or 'seller'
@@ -8,11 +9,43 @@ const Register = () => {
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [handle, setHandle] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
+  
+  const { register } = useAuth();
+  const navigate = useNavigate();
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log('Registration attempt:', { role, email, password, handle });
-    // Auth logic will be handled by the platform engineer
+    setError('');
+
+    if (password !== confirmPassword) {
+      setError('Passwords do not match');
+      return;
+    }
+
+    setLoading(true);
+    
+    try {
+      const data = await register({
+        email,
+        password,
+        role,
+        handle: role === 'seller' ? handle : undefined
+      });
+
+      if (data.success) {
+        if (role === 'seller') {
+          navigate('/dashboard');
+        } else {
+          navigate('/browse');
+        }
+      }
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -28,10 +61,18 @@ const Register = () => {
           </p>
         </div>
 
+        {error && (
+          <div className="bg-red-50 text-red-600 p-4 rounded-xl text-sm font-medium border border-red-100">
+            {error}
+          </div>
+        )}
+
         {/* Role Toggle */}
         <div className="flex p-1 bg-background rounded-2xl border border-secondary/20">
           <button
+            type="button"
             onClick={() => setRole('buyer')}
+            disabled={loading}
             className={`flex-1 py-2 text-sm font-bold rounded-xl transition ${
               role === 'buyer' 
                 ? 'bg-white text-neutral shadow-sm' 
@@ -41,7 +82,9 @@ const Register = () => {
             I'm a Buyer
           </button>
           <button
+            type="button"
             onClick={() => setRole('seller')}
+            disabled={loading}
             className={`flex-1 py-2 text-sm font-bold rounded-xl transition ${
               role === 'seller' 
                 ? 'bg-primary text-neutral shadow-sm' 
@@ -70,6 +113,7 @@ const Register = () => {
                     placeholder="yourhandle"
                     value={handle}
                     onChange={(e) => setHandle(e.target.value)}
+                    disabled={loading}
                   />
                 </div>
                 <p className="text-[10px] text-gray-400 mt-1 ml-1">This will be your public URL: solestream.io/seller/yourhandle</p>
@@ -90,6 +134,7 @@ const Register = () => {
                 placeholder="email@example.com"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
+                disabled={loading}
               />
             </div>
 
@@ -106,6 +151,7 @@ const Register = () => {
                 placeholder="••••••••"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
+                disabled={loading}
               />
             </div>
 
@@ -122,6 +168,7 @@ const Register = () => {
                 placeholder="••••••••"
                 value={confirmPassword}
                 onChange={(e) => setConfirmPassword(e.target.value)}
+                disabled={loading}
               />
             </div>
           </div>
@@ -135,9 +182,12 @@ const Register = () => {
           <div>
             <button
               type="submit"
-              className="group relative w-full flex justify-center py-4 px-4 border border-transparent text-lg font-bold rounded-xl text-neutral bg-primary hover:bg-opacity-90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary transition shadow-lg shadow-primary/20"
+              disabled={loading}
+              className="group relative w-full flex justify-center py-4 px-4 border border-transparent text-lg font-bold rounded-xl text-neutral bg-primary hover:bg-opacity-90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary transition shadow-lg shadow-primary/20 disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              {role === 'seller' ? 'Create Creator Account' : 'Create Buyer Account'}
+              {loading 
+                ? 'Creating account...' 
+                : (role === 'seller' ? 'Create Creator Account' : 'Create Buyer Account')}
             </button>
           </div>
         </form>

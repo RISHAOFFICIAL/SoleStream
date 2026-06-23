@@ -47,7 +47,7 @@ router.post('/listings', upload.fields([
     const previewFile = req.files['preview_image'][0];
     const fullFile = req.files['full_resolution_archive'][0];
 
-    // Process preview with sharp (optional, but good for standardization)
+    // Process preview with sharp
     const previewOutputPath = path.join(__dirname, '../public/previews', `preview-${listing_id}.jpg`);
     await sharp(previewFile.path)
       .resize(800, 800, { fit: 'inside' })
@@ -89,7 +89,7 @@ router.post('/listings', upload.fields([
 // GET /api/seller/listings (Helper for dashboard)
 router.get('/listings', (req, res) => {
   try {
-    const listings = db.prepare('SELECT * FROM listings WHERE seller_id = ? ORDER BY created_at DESC').all(req.user.id);
+    const listings = db.prepare('SELECT * FROM listings WHERE seller_id = ? AND status != "archived" ORDER BY created_at DESC').all(req.user.id);
     res.json({ success: true, listings });
   } catch (err) {
     console.error(err);
@@ -169,6 +169,53 @@ router.get('/analytics', (req, res) => {
       }
     });
   } catch (err) {
+    console.error(err);
+    res.status(500).json({ success: false, error: 'Internal server error' });
+  }
+});
+
+// GET /api/seller/profile
+router.get('/profile', (req, res) => {
+  try {
+    const profile = db.prepare('SELECT * FROM seller_profiles WHERE user_id = ?').get(req.user.id);
+    if (!profile) {
+      return res.status(404).json({ success: false, error: 'Profile not found' });
+    }
+    res.json({ success: true, profile });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ success: false, error: 'Internal server error' });
+  }
+});
+
+// PUT /api/seller/profile
+router.put('/profile', (req, res) => {
+  const { bio, handle, avatar_url } = req.body;
+  const now = Math.floor(Date.now() / 1000);
+
+  try {
+    const profile = db.prepare('SELECT * FROM seller_profiles WHERE user_id = ?').get(req.user.id);
+    if (!profile) {
+      return res.status(404).json({ success: false, error: 'Profile not found' });
+    }
+
+    db.prepare(`
+      UPDATE seller_profiles 
+      SET bio = ?, handle = ?, avatar_url = ?, updated_at = ?
+      WHERE user_id = ?
+    `).run(
+      bio !== undefined ? bio : profile.bio, 
+      handle !== undefined ? handle : profile.handle, 
+      avatar_url !== undefined ? avatar_url : profile.avatar_url, 
+      now, 
+      req.user.id
+    );
+
+    res.json({ success: true, message: 'Profile updated successfully' });
+  } catch (err) {
+    if (err.message.includes('UNIQUE constraint failed: seller_profiles.handle')) {
+      return res.status(400).json({ success: false, error: 'Handle already taken' });
+    }
     console.error(err);
     res.status(500).json({ success: false, error: 'Internal server error' });
   }

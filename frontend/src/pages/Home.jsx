@@ -1,15 +1,30 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import sellerPersona from '../assets/seller-persona.png';
 import ListingCard from '../components/marketplace/ListingCard';
-
-const FEATURED_LISTINGS = [
-  { id: '1', title: 'Soft Sand Stroll', price: '25.00', sellerHandle: 'oceanvibes', previewUrl: '' },
-  { id: '2', title: 'Morning Dew', price: '19.99', sellerHandle: 'forestwalk', previewUrl: '' },
-  { id: '3', title: 'Silk & Satin', price: '45.00', sellerHandle: 'elegance', previewUrl: '' },
-];
+import { listingsAPI } from '../services/api';
 
 const Home = () => {
+  const [featuredListings, setFeaturedListings] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchFeatured = async () => {
+      try {
+        const data = await listingsAPI.getListings({ limit: 3 });
+        if (data.success) {
+          setFeaturedListings(data.listings);
+        }
+      } catch (err) {
+        console.error('Failed to fetch featured listings:', err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchFeatured();
+  }, []);
+
   return (
     <div className="flex flex-col">
       {/* Hero Section */}
@@ -105,11 +120,23 @@ const Home = () => {
             </Link>
           </div>
           
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
-            {FEATURED_LISTINGS.map(listing => (
-              <ListingCard key={listing.id} listing={listing} />
-            ))}
-          </div>
+          {loading ? (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 animate-pulse">
+              {[1, 2, 3].map(i => (
+                <div key={i} className="bg-gray-100 rounded-2xl aspect-[4/5]"></div>
+              ))}
+            </div>
+          ) : featuredListings.length > 0 ? (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+              {featuredListings.map(listing => (
+                <ListingCard key={listing.id} listing={listing} />
+              ))}
+            </div>
+          ) : (
+            <div className="bg-background p-12 rounded-2xl text-center">
+              <p className="text-gray-500">New packs arriving soon!</p>
+            </div>
+          )}
 
           <div className="mt-12 text-center sm:hidden">
             <Link to="/browse" className="inline-block bg-white text-neutral border-2 border-secondary px-8 py-3 rounded-xl font-bold transition">

@@ -1,39 +1,66 @@
 import React from 'react';
-import { Link, Outlet, NavLink } from 'react-router-dom';
+import { Link, Outlet, NavLink, useNavigate } from 'react-router-dom';
+import Logo from '../components/common/Logo';
+import { useAuth } from '../context/AuthContext';
 
 const DashboardLayout = () => {
+  const { user, logout } = useAuth();
+  const navigate = useNavigate();
+
+  const handleLogout = async () => {
+    await logout();
+    navigate('/');
+  };
+
   return (
     <div className="min-h-screen flex bg-background">
       <aside className="w-64 bg-white border-r border-secondary/20 min-h-screen hidden md:block">
-        <div className="p-6">
-          <Link to="/" className="text-2xl font-bold">
-            <span className="text-neutral">Sole</span>
-            <span className="text-primary font-light">Stream</span>
+        <div className="p-6 mb-4">
+          <Link to="/">
+            <Logo size={180} />
           </Link>
         </div>
-        <nav className="mt-6 px-4 space-y-2">
-          <NavLink to="/dashboard" end className={({ isActive }) => `block px-4 py-2 rounded-xl transition ${isActive ? 'bg-primary text-neutral' : 'text-neutral hover:bg-accent/50'}`}>
+        <nav className="px-4 space-y-1">
+          <NavLink to="/dashboard" end className={({ isActive }) => `block px-4 py-3 rounded-xl font-bold transition ${isActive ? 'bg-primary text-neutral shadow-sm' : 'text-gray-500 hover:bg-secondary/10 hover:text-neutral'}`}>
             Overview
           </NavLink>
-          <NavLink to="/dashboard/listings" className={({ isActive }) => `block px-4 py-2 rounded-xl transition ${isActive ? 'bg-primary text-neutral' : 'text-neutral hover:bg-accent/50'}`}>
+          <NavLink to="/dashboard/listings" className={({ isActive }) => `block px-4 py-3 rounded-xl font-bold transition ${isActive ? 'bg-primary text-neutral shadow-sm' : 'text-gray-500 hover:bg-secondary/10 hover:text-neutral'}`}>
             My Listings
           </NavLink>
-          <NavLink to="/dashboard/orders" className={({ isActive }) => `block px-4 py-2 rounded-xl transition ${isActive ? 'bg-primary text-neutral' : 'text-neutral hover:bg-accent/50'}`}>
+          <NavLink to="/dashboard/orders" className={({ isActive }) => `block px-4 py-3 rounded-xl font-bold transition ${isActive ? 'bg-primary text-neutral shadow-sm' : 'text-gray-500 hover:bg-secondary/10 hover:text-neutral'}`}>
             Orders
           </NavLink>
-          <NavLink to="/dashboard/settings" className={({ isActive }) => `block px-4 py-2 rounded-xl transition ${isActive ? 'bg-primary text-neutral' : 'text-neutral hover:bg-accent/50'}`}>
+          <NavLink to="/dashboard/settings" className={({ isActive }) => `block px-4 py-3 rounded-xl font-bold transition ${isActive ? 'bg-primary text-neutral shadow-sm' : 'text-gray-500 hover:bg-secondary/10 hover:text-neutral'}`}>
             Settings
           </NavLink>
         </nav>
+        <div className="absolute bottom-8 left-4 right-4">
+          <button 
+            onClick={handleLogout}
+            className="w-full text-left px-4 py-3 rounded-xl font-bold text-gray-400 hover:bg-red-50 hover:text-red-600 transition"
+          >
+            Sign Out
+          </button>
+        </div>
       </aside>
       <div className="flex-grow flex flex-col">
-        <header className="bg-white h-16 border-b border-secondary/20 flex items-center justify-end px-8">
-          <div className="flex items-center space-x-4">
-            <span className="text-sm font-medium">Seller Account</span>
-            <div className="w-8 h-8 rounded-full bg-secondary"></div>
+        <header className="bg-white h-16 border-b border-secondary/20 flex items-center justify-between px-8">
+          <div className="md:hidden">
+            <Link to="/">
+              <Logo size={140} />
+            </Link>
+          </div>
+          <div className="flex items-center space-x-4 ml-auto">
+            <div className="text-right hidden sm:block">
+              <div className="text-sm font-bold text-neutral">@{user.seller_profile?.handle || 'Seller'}</div>
+              <div className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Creator Account</div>
+            </div>
+            <div className="w-10 h-10 rounded-full bg-primary/20 flex items-center justify-center font-bold text-neutral border-2 border-white shadow-sm">
+              {user.email[0].toUpperCase()}
+            </div>
           </div>
         </header>
-        <main className="p-8">
+        <main className="flex-grow overflow-auto">
           <Outlet />
         </main>
       </div>

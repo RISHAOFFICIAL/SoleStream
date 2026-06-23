@@ -1,8 +1,17 @@
 import React from 'react';
-import { Link, Outlet } from 'react-router-dom';
+import { Link, Outlet, useNavigate } from 'react-router-dom';
 import Logo from '../components/common/Logo';
+import { useAuth } from '../context/AuthContext';
 
 const MainLayout = () => {
+  const { user, isAuthenticated, logout, isSeller } = useAuth();
+  const navigate = useNavigate();
+
+  const handleLogout = async () => {
+    await logout();
+    navigate('/');
+  };
+
   return (
     <div className="min-h-screen flex flex-col bg-background font-sans">
       <nav className="bg-white shadow-sm border-b border-secondary/20 sticky top-0 z-50">
@@ -13,10 +22,34 @@ const MainLayout = () => {
                 <Logo size={180} />
               </Link>
             </div>
-            <div className="hidden md:flex space-x-8">
-              <Link to="/browse" className="text-neutral hover:text-primary transition">Browse</Link>
-              <Link to="/auth/login" className="text-neutral hover:text-primary transition">Login</Link>
-              <Link to="/auth/register" className="bg-primary text-neutral px-4 py-2 rounded-xl font-medium hover:bg-opacity-90 transition">Sell Content</Link>
+            <div className="hidden md:flex items-center space-x-8">
+              <Link to="/browse" className="text-neutral hover:text-primary transition font-medium">Browse</Link>
+              
+              {isAuthenticated ? (
+                <>
+                  {isSeller && (
+                    <Link to="/dashboard" className="text-neutral hover:text-primary transition font-medium">Dashboard</Link>
+                  )}
+                  <button 
+                    onClick={handleLogout}
+                    className="text-gray-500 hover:text-neutral transition text-sm font-medium"
+                  >
+                    Logout
+                  </button>
+                  <div className="flex items-center space-x-2 pl-4 border-l border-secondary/20">
+                    <div className="w-8 h-8 bg-primary/20 rounded-full flex items-center justify-center text-xs font-bold">
+                      {user.email[0].toUpperCase()}
+                    </div>
+                  </div>
+                </>
+              ) : (
+                <>
+                  <Link to="/auth/login" className="text-neutral hover:text-primary transition font-medium">Login</Link>
+                  <Link to="/auth/register" className="bg-primary text-neutral px-6 py-2 rounded-xl font-bold hover:bg-opacity-90 transition shadow-sm">
+                    Sell Content
+                  </Link>
+                </>
+              )}
             </div>
           </div>
         </div>

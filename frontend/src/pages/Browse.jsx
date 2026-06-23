@@ -99,9 +99,9 @@ const Browse = () => {
 
         {/* Listing Grid */}
         <main className="flex-grow">
-          <div className="flex justify-between items-center mb-8">
+            <div className="flex justify-between items-center mb-8">
             <h1 className="text-2xl font-bold text-neutral">
-              Marketplace {pagination.total_listings > 0 && (
+              All Collections {pagination.total_listings > 0 && (
                 <span className="text-gray-400 font-normal ml-2 text-lg">({pagination.total_listings} packs)</span>
               )}
             </h1>

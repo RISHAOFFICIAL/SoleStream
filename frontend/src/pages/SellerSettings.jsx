@@ -128,7 +128,7 @@ const AdminSettings = () => {
         </section>
 
         {/* Payments Section */}
-        <section className="bg-white rounded-2xl border border-secondary/20 shadow-sm overflow-hidden opacity-60">
+        <section className="bg-white rounded-2xl border border-secondary/20 shadow-sm overflow-hidden">
           <div className="px-8 py-6 border-b border-secondary/10 flex items-center gap-3">
             <Icon name="credit-card" className="w-5 h-5 text-blue-500" />
             <h2 className="font-bold text-neutral uppercase tracking-widest text-sm">Payment Gateway</h2>

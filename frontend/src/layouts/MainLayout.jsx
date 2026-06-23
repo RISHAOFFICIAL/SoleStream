@@ -28,7 +28,7 @@ const MainLayout = () => {
               {isAuthenticated ? (
                 <>
                   {isSeller && (
-                    <Link to="/dashboard" className="text-neutral hover:text-primary transition font-medium">Dashboard</Link>
+                    <Link to="/dashboard" className="text-neutral hover:text-primary transition font-medium">Admin</Link>
                   )}
                   <button 
                     onClick={handleLogout}
@@ -46,7 +46,7 @@ const MainLayout = () => {
                 <>
                   <Link to="/auth/login" className="text-neutral hover:text-primary transition font-medium">Login</Link>
                   <Link to="/auth/register" className="bg-primary text-neutral px-6 py-2 rounded-xl font-bold hover:bg-opacity-90 transition shadow-sm">
-                    Sell Content
+                    Create Account
                   </Link>
                 </>
               )}
@@ -63,15 +63,15 @@ const MainLayout = () => {
             <div>
               <Logo size={150} className="brightness-0 invert mb-4" />
               <p className="text-gray-400 text-sm">
-                The professional marketplace for feet content creators. 
+                The premier destination for exclusive digital collections. 
                 Discreet, automated, and secure.
               </p>
             </div>
             <div>
               <h4 className="font-bold mb-4">Platform</h4>
               <ul className="space-y-2 text-sm text-gray-400">
-                <li><Link to="/browse" className="hover:text-primary transition">Browse Marketplace</Link></li>
-                <li><Link to="/auth/register" className="hover:text-primary transition">Become a Seller</Link></li>
+                <li><Link to="/browse" className="hover:text-primary transition">Browse Collections</Link></li>
+                <li><Link to="/auth/register" className="hover:text-primary transition">Create Account</Link></li>
                 <li><Link to="/auth/login" className="hover:text-primary transition">Account Login</Link></li>
               </ul>
             </div>

@@ -25,13 +25,13 @@ const DashboardLayout = () => {
             Admin Overview
           </NavLink>
           <NavLink to="/dashboard/listings" className={({ isActive }) => `block px-4 py-3 rounded-xl font-bold transition ${isActive ? 'bg-primary text-neutral shadow-sm' : 'text-gray-500 hover:bg-secondary/10 hover:text-neutral'}`}>
-            Manage Store
+            Manage Content
           </NavLink>
           <NavLink to="/dashboard/orders" className={({ isActive }) => `block px-4 py-3 rounded-xl font-bold transition ${isActive ? 'bg-primary text-neutral shadow-sm' : 'text-gray-500 hover:bg-secondary/10 hover:text-neutral'}`}>
             Sales History
           </NavLink>
           <NavLink to="/dashboard/settings" className={({ isActive }) => `block px-4 py-3 rounded-xl font-bold transition ${isActive ? 'bg-primary text-neutral shadow-sm' : 'text-gray-500 hover:bg-secondary/10 hover:text-neutral'}`}>
-            Site Settings
+            Store Settings
           </NavLink>
         </nav>
         <div className="absolute bottom-8 left-4 right-4">
